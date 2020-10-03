@@ -28,46 +28,40 @@ function App() {
                   onClick={() => {
                     dispatch({
                       type: 'EDIT_CELL',
-                      row: rowIndex,
-                      column: cellIndex,
+                      rowIndex,
+                      cellIndex,
                     });
                   }}
                 >
                   {cell.isEditing ? (
                     <input
-                      defaultValue={cell.rawValue}
+                      defaultValue={cell.computedValue}
                       autoFocus
                       onKeyDown={(event) => {
                         if (event.key === 'Escape') {
                           dispatch({
                             type: 'STOP_EDIT_CELL',
-                            row: rowIndex,
-                            column: cellIndex,
-                          });
-
-                          dispatch({
-                            type: 'STOP_EDIT_CELL',
-                            row: rowIndex,
-                            column: cellIndex,
+                            rowIndex,
+                            cellIndex,
                           });
                         } else if (event.key === 'Enter') {
                           dispatch({
                             type: 'UPDATE_CELL',
-                            row: rowIndex,
-                            column: cellIndex,
+                            rowIndex,
+                            cellIndex,
                             value: event.currentTarget.value,
                           });
 
                           dispatch({
                             type: 'STOP_EDIT_CELL',
-                            row: rowIndex,
-                            column: cellIndex,
+                            rowIndex,
+                            cellIndex,
                           });
                         }
                       }}
                     />
                   ) : (
-                    cell.rawValue
+                    cell.computedValue
                   )}
                 </td>
               ))}
