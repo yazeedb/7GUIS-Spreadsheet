@@ -16,3 +16,7 @@ td {
 .row-number {
   text-align: right;
 }
+
+input {
+  width: 100%;
+}

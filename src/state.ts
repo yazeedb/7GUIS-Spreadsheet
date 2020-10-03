@@ -1,72 +1,58 @@
-type ComputedValue = string | number;
-
 interface Cell {
   rawValue: string;
-  computedValue: ComputedValue;
+  computedValue: string | number;
   isEditing: boolean;
+  toString: () => string;
 }
 
 interface State {
-  cellMap: Map<string, Cell>;
+  rows: Cell[][];
+  currentlyEditingCell: Cell | null;
 }
 
-export type Action =
-  | {
-      type: 'EDIT_CELL';
-      rowIndex: number;
-      columnIndex: number;
-    }
-  | {
-      type: 'STOP_EDIT_CELL';
-      rowIndex: number;
-      columnIndex: number;
-    };
+type Action =
+  | { type: 'EDIT_CELL'; row: number; column: number }
+  | { type: 'STOP_EDIT_CELL'; row: number; column: number }
+  | { type: 'UPDATE_CELL'; row: number; column: number; value: string };
 
-export const initialColumnValues: Cell[] = Array.from({ length: 26 }, () => ({
-  rawValue: '',
-  computedValue: '',
-  isEditing: false,
-}));
+const rows = Array.from({ length: 100 }, (_, rowIndex) =>
+  Array.from({ length: 26 }, (_, columnIndex) => ({
+    rawValue: '',
+    computedValue: '',
+    isEditing: false,
+    toString: () => `${rowIndex},${columnIndex}`,
+  }))
+);
 
 export const initialState: State = {
-  cellMap: Array.from({ length: 100 }, () => initialColumnValues).reduce(
-    (map, row, rowIndex) => {
-      row.forEach((cell, columnIndex) => {
-        map.set(`${rowIndex},${columnIndex}`, cell);
-      });
-
-      return map;
-    },
-    new Map()
-  ),
+  rows,
+  currentlyEditingCell: null,
 };
 
 export const reducer = (state: State, action: Action): State => {
+  const cell = state.rows[action.row][action.column];
+
   switch (action.type) {
     case 'EDIT_CELL': {
-      const { columnIndex, rowIndex } = action;
-      const id = `${rowIndex},${columnIndex}`;
-
-      const cell = state.cellMap.get(id);
-
-      if (cell) {
-        state.cellMap.set(id, { ...cell, isEditing: true });
+      if (state.currentlyEditingCell) {
+        state.currentlyEditingCell.isEditing = false;
       }
 
-      return state;
+      cell.isEditing = true;
+
+      return { ...state, currentlyEditingCell: cell };
     }
 
     case 'STOP_EDIT_CELL': {
-      const { columnIndex, rowIndex } = action;
-      const id = `${rowIndex},${columnIndex}`;
+      cell.isEditing = false;
 
-      const cell = state.cellMap.get(id);
+      return { ...state, currentlyEditingCell: null };
+    }
 
-      if (cell) {
-        state.cellMap.set(id, { ...cell, isEditing: false });
-      }
+    case 'UPDATE_CELL': {
+      cell.rawValue = action.value.trim();
 
-      return state;
+      return { ...state };
     }
   }
 };
