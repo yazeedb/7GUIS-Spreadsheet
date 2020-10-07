@@ -25,6 +25,7 @@ function App() {
               {row.map((cell, cellIndex) => (
                 <td
                   key={cellIndex}
+                  className="cell"
                   onClick={() => {
                     dispatch({
                       type: 'EDIT_CELL',
@@ -35,7 +36,7 @@ function App() {
                 >
                   {cell.isEditing ? (
                     <input
-                      defaultValue={cell.computedValue}
+                      defaultValue={cell.rawValue}
                       autoFocus
                       onKeyDown={(event) => {
                         if (event.key === 'Escape') {

@@ -1,5 +1,6 @@
-type ComputedValue = string | number;
+import { computeValue } from './computeValue.naive';
 
+type ComputedValue = string | number;
 interface Cell {
   rawValue: string;
   computedValue: ComputedValue;
@@ -25,12 +26,16 @@ type Action =
     };
 
 const rows = Array.from({ length: 100 }, (_, rowIndex) =>
-  Array.from({ length: 26 }, (_, cellIndex) => ({
-    rawValue: '',
-    computedValue: '',
-    isEditing: false,
-    toString: () => `${rowIndex},${cellIndex}`,
-  }))
+  Array.from(
+    { length: 26 },
+    (_, cellIndex) =>
+      ({
+        rawValue: '',
+        computedValue: '',
+        isEditing: false,
+        toString: () => `${rowIndex},${cellIndex}`,
+      } as Cell)
+  )
 );
 
 export const initialState: State = {
@@ -65,27 +70,10 @@ export const reducer = (state: State, action: Action): State => {
 
     case 'UPDATE_CELL': {
       cell.rawValue = action.value.trim();
-      cell.computedValue = computeCellValue(cell.rawValue, state.rows);
+
+      cell.computedValue = computeValue(cell.rawValue);
 
       return { ...state };
     }
   }
 };
-
-const computeCellValue = (rawValue: string, rows: Rows): ComputedValue => {
-  switch (parseValueType(rawValue)) {
-    case 'text':
-      return rawValue;
-
-    case 'number':
-      return valueToNumber(rawValue);
-  }
-};
-
-const parseValueType = (rawValue: string): ValueType => {
-  return isNaN(Number(rawValue)) ? 'text' : 'number';
-};
-
-type ValueType = 'text' | 'number';
-
-const valueToNumber = (value: string) => Number(value);

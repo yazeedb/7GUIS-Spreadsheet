@@ -5,6 +5,15 @@ table {
 td {
   border: 1px solid #6e6e6e;
   padding: 10px 50px;
+  text-align: center;
+  min-width: 30px;
+  max-width: 30px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cell {
+  position: relative;
 }
 
 .row-number,
@@ -18,5 +27,8 @@ td {
 }
 
 input {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
 }
