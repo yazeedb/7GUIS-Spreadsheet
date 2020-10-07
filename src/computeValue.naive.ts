@@ -42,7 +42,7 @@ const parseHelp = (value: string): [Expression | null, string] => {
 
     if (leftExpression && afterLeftTrimmed.startsWith(',')) {
       const [rightExpression, afterRight] = parseHelp(
-        afterLeftTrimmed.slice(1)
+        afterLeftTrimmed.slice(1).trim()
       );
 
       const afterRightTrimmed = afterRight.trim();
@@ -76,13 +76,26 @@ const evaluate = (expression: Expression): number => {
   );
 };
 
-const applyOperation = (operation: OperationName, a: number, b: number) => {
+const applyOperation = (
+  operation: OperationName,
+  a: number,
+  b: number
+): number => {
   switch (operation) {
     case 'add':
       return a + b;
 
+    case 'sub':
+      return a - b;
+
     case 'mul':
       return a * b;
+
+    case 'div':
+      return a / b;
+
+    case 'mod':
+      return a % b;
   }
 };
 
@@ -91,7 +104,10 @@ const isNumber = (value: string) => !isNaN(Number(value));
 
 const operationMap: Map<string, OperationName> = new Map([
   ['add', 'add'],
+  ['sub', 'sub'],
   ['mul', 'mul'],
+  ['div', 'div'],
+  ['mod', 'mod'],
 ]);
 
 type Expression =
@@ -103,7 +119,7 @@ type Expression =
       eRight: Expression;
     };
 
-type OperationName = 'add' | 'mul';
+type OperationName = 'add' | 'sub' | 'mul' | 'div' | 'mod';
 
 const takeWhile = (pred: (v: string) => boolean, string: string) => {
   let newString = '';
